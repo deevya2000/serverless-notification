@@ -23,7 +23,7 @@ spec:
                       echo '*** Build Starting ***'
                       sh "oc new-build quay.io/quarkus/ubi-quarkus-native-s2i:21.1.0-java11~${env.GITHUB_URL}"
                       sh "sleep 8"
-                      sh "oc cancel-build bc/${APP_NAME}|"
+                      sh "oc cancel-build bc/${APP_NAME}"
                       sh "sleep 8"
                       sh "oc patch bc/${APP_NAME}| -p '{\"spec\":{\"resources\":{\"limits\":{\"cpu\":\"4\", \"memory\":\"4Gi\"}}}}'"
                       sh "oc start-build bc/${APP_NAME}|  --follow --wait"
