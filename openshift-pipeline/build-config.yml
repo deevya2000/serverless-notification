@@ -10,7 +10,7 @@ spec:
         pipeline {
         environment {
         PROJECT_NAME = "test-quarkus-native"
-        GITHUB_URL = "https://github.com/deevya2000/notification-service"   
+        GITHUB_URL = "https://github.com/deevya2000/serverless-notification"   
         APP_NAME = "notification-service"
         }
           agent any
