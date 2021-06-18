@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: quarkus-native-pipeline-
+spec:
+  params:
+    - name: application-git-url
+      value: github.com/quarkusio/quarkus-quickstarts.git
+    - name: application-git-revision
+      value: main
+    - name: application-git-context
+      value: getting-started
+    - name: application-name
+      value: quarki
+  pipelineRef:
+    name: quarkus-native-pipeline

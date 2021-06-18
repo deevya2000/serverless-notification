@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: quarkus-native-pipeline
+spec:
+  params:
+    - name: application-git-url
+      type: string
+    - name: application-git-context
+      type: string
+    - name: application-name
+      type: string
+  tasks:
+    - name: build-application-image
+      params:
+        - name: APPLICATION_NAME
+          value: $(params.application-name)
+        - name: CONTEXT
+          value: $(params.application-git-context)
+        - name: GITHUB_URL
+          value: $(params.application-git-url)
+      taskRef:
+        kind: Task
+        name: build-application-image
+    - name: deploy-native-service
+      runAfter:
+        - build-application-image
+      taskRef:
+        kind: Task
+        name: deploy-native-service
+      params:
+        - name: APPLICATION_NAME
+          value: $(params.application-name)

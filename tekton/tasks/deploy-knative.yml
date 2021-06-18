@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-native-service
+spec:
+  params:
+    - description: Name of the Application
+      name: APPLICATION_NAME
+      type: string
+  steps:
+    - args:
+        - >-
+          oc get is $(params.APPLICATION_NAME)  -o json > test.json;  
+          cat test.json;
+          imagename=$(grep 'dockerImageRepository' test.json | sed -r 's/^[^:]*:(.*)$/\1/' | sed 's/,//g');
+
+          echo $imagename;
+
+          echo '{"apiVersion":"serving.knative.dev/v1","kind":"Service","metadata":{"name":"$(params.APPLICATION_NAME)"},"spec":{"template":{"spec":{"containers":[{"image":image_name_here}]}}}}' > knative.json; 
+
+          cat knative.json;  
+
+          sed -i "s|image_name_here|${imagename}|g" knative.json
+
+          #sed -i "s/image_name_here/$imagename/" knative.json; 
+
+          cat knative.json; 
+          oc apply -f knative.json
+
+          echo -----------------------------------
+      command:
+        - /bin/bash
+        - '-c'
+      image: 'quay.io/openshift/origin-cli:latest'
+      name: apply
+      resources: {}
+      workingDir: /workspace/source

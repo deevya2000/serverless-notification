@@ -1,0 +1,52 @@
+#Task  : build-application-image
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-application-image
+spec:
+  params:
+    - description: Name of the Application
+      name: APPLICATION_NAME
+      type: string
+    - description: Name of the GitHub subfolder containing pom.xml
+      name: CONTEXT
+      type: string
+    - description: GitHub URL
+      name: GITHUB_URL
+      type: string
+  steps:
+    - command:
+        - /bin/bash
+        - '-c'
+        - echo hello
+      image: registry.redhat.io/ubi7/ubi-minimal
+      name: ''
+      resources: {}
+    - args:
+        - >-
+          echo Building Image;
+          oc new-build
+          quay.io/quarkus/ubi-quarkus-native-s2i:21.1.0-java11~https://$(params.GITHUB_URL)
+          --context-dir=$(params.CONTEXT)  --name=$(params.APPLICATION_NAME) ;
+          sleep 8;
+
+          echo Cancelling first build ;
+
+
+          oc cancel-build bc/$(params.APPLICATION_NAME);  sleep 8;
+
+          oc patch bc/$(params.APPLICATION_NAME) -p
+          '{"spec":{"resources":{"limits":{"cpu":"4", "memory":"4Gi"}}}}';
+
+
+          oc start-build $(params.APPLICATION_NAME) --follow --wait
+
+
+          echo ——————BUILD COMPLETE—————————
+      command:
+        - /bin/bash
+        - '-c'
+      image: 'quay.io/openshift/origin-cli:latest'
+      name: ''
+      resources: {}

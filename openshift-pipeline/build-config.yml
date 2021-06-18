@@ -1,0 +1,42 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: notification-service-pipeline-bc
+spec:
+  strategy:
+    type: JenkinsPipeline
+    jenkinsPipelineStrategy:
+      jenkinsfile: |
+        pipeline {
+        environment {
+        PROJECT_NAME = "test-quarkus-native"
+        GITHUB_URL = "https://github.com/deevya2000/notification-service"   
+        APP_NAME = "notification-service"
+        }
+          agent any
+          stages{
+            stage("Build") {
+              steps{
+                script{
+                  openshift.withCluster() {
+                    openshift.withProject() {
+                      echo '*** Build Starting ***'
+                      sh "oc new-build quay.io/quarkus/ubi-quarkus-native-s2i:21.1.0-java11~${env.GITHUB_URL}"
+                      sh "sleep 8"
+                      sh "oc cancel-build bc/${APP_NAME}|"
+                      sh "sleep 8"
+                      sh "oc patch bc/${APP_NAME}| -p '{\"spec\":{\"resources\":{\"limits\":{\"cpu\":\"4\", \"memory\":\"4Gi\"}}}}'"
+                      sh "oc start-build bc/${APP_NAME}|  --follow --wait"
+                      sh "wget https://raw.githubusercontent.com/deevya2000/hello-quarkus/master/knative.yml -O knative-build.yaml"
+                      sh "oc get is ${APP_NAME}|  -o json > test.json;"
+                      sh "sed -i \"s|REPO_IMAGE_NAME|image-registry.openshift-image-registry.svc:5000/${PROJECT_NAME}/${APP_NAME}|g\" knative-build.yaml"
+                      sh "cat knative-build.yaml"
+                      sh "oc create -f knative-build.yaml"
+                      echo '*** Build Complete ***'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }

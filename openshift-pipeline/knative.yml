@@ -1,0 +1,9 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+ name: notification-service
+spec:
+ template:
+  spec:
+   containers:
+    - image: REPO_IMAGE_NAME
