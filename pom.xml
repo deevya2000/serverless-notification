@@ -37,11 +37,11 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-mailer</artifactId>
 	</dependency>
-<!--   <dependency>
+  <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client</artifactId>
     </dependency>
-     <dependency>
+<!--      <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-kafka-client</artifactId>
     </dependency>
