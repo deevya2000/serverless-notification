@@ -21,17 +21,20 @@ spec:
                   openshift.withCluster() {
                     openshift.withProject() {
                       echo '*** Build Starting ***'
+                      echo 'Cleaning up old builds'
+                      sh "oc delete bc/${APP_NAME} --ignore-not-found=true"
+                      sh "oc delete is/${APP_NAME} --ignore-not-found=true"
                       sh "oc new-build quay.io/quarkus/ubi-quarkus-native-s2i:21.1.0-java11~${env.GITHUB_URL}"
                       sh "sleep 8"
                       sh "oc cancel-build bc/${APP_NAME}"
                       sh "sleep 8"
-                      sh "oc patch bc/${APP_NAME}| -p '{\"spec\":{\"resources\":{\"limits\":{\"cpu\":\"4\", \"memory\":\"4Gi\"}}}}'"
-                      sh "oc start-build bc/${APP_NAME}|  --follow --wait"
+                      sh "oc patch bc/${APP_NAME} -p '{\"spec\":{\"resources\":{\"limits\":{\"cpu\":\"4\", \"memory\":\"4Gi\"}}}}'"
+                      sh "oc start-build bc/${APP_NAME} --follow --wait"
                       sh "wget https://raw.githubusercontent.com/deevya2000/hello-quarkus/master/knative.yml -O knative-build.yaml"
-                      sh "oc get is ${APP_NAME}|  -o json > test.json;"
+                      sh "oc get is ${APP_NAME} -o json > test.json;"
                       sh "sed -i \"s|REPO_IMAGE_NAME|image-registry.openshift-image-registry.svc:5000/${PROJECT_NAME}/${APP_NAME}|g\" knative-build.yaml"
                       sh "cat knative-build.yaml"
-                      sh "oc create -f knative-build.yaml"
+                      sh "oc apply -f knative-build.yaml"
                       echo '*** Build Complete ***'
                     }
                   }
