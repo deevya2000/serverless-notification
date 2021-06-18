@@ -1,4 +1,3 @@
-/*
 package com.ibm;
 
 import javax.ws.rs.POST;
@@ -17,4 +16,4 @@ public interface EmailService {
 	@Produces(MediaType.APPLICATION_JSON)
 	String sendemail(String payload);
 
-}*/
+}
