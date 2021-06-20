@@ -8,17 +8,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-//import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 
 @Path("/")
 public class ProductPriceResource {
 	
-	/*
-	 * @Inject
-	 * 
-	 * @RestClient EmailService emailService;
-	 */
+    @Inject
+    @RestClient
+    EmailService emailService;
+    
     @GET
 	@Path("/pricehello")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -37,8 +36,8 @@ public class ProductPriceResource {
 	public void pricechanged(@PathParam("productId") String productId, @PathParam("newPrice") String newPrice) {
 		System.out.println("Serverless call invoked for product ID : "+productId+", price has changed to "+newPrice);	
 		//int statusCode = sendEmailNotificationWithQuarkus(productId, newPrice);		
-		//String resp = emailService.sendemail("test json data");
-         //System.out.println("Serverless Response = "+resp);	
+		String resp = emailService.sendemail("test json data");
+         System.out.println("Serverless Response = "+resp);	
 		
 		/*
 		 * if(statusCode == 201) return "Notification sent!"; else return
