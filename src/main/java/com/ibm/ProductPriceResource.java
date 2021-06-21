@@ -25,18 +25,9 @@ public class ProductPriceResource {
 //    @RestClient
 //    EmailService emailService;
     
-    @GET
-	@Path("/pricehello")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String pricehello() {		
-		//int statusCode = sendEmailNotificationWithQuarkus(productId, newPrice);
-		System.out.println("inside");
-		String resp = "";//emailService.sendemail("{\"name\":\"test\",\"salary\":\"123\",\"age\":\"23\"}");
-        System.out.println("Serverless Response = "+resp);        
-        return resp;
-	}
 
 	@POST
+	@Produces(MediaType.TEXT_PLAIN)
 	public void process(String message) {
 		System.out.println(
 				"Kafka message received with Quarkus reactive and Knative: product-price-updated - Sending email : " + message);
