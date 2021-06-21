@@ -20,11 +20,11 @@ import io.smallrye.mutiny.Uni;
 @Path("/")
 public class ProductPriceResource {
 	
-	/*
-	 * @Inject
-	 * 
-	 * @RestClient EmailService emailService;
-	 */
+	
+	  @Inject	  
+	  @RestClient 
+	  EmailService emailService;
+	 
     
     @GET
 	@Path("/pricehello")
@@ -44,8 +44,8 @@ public class ProductPriceResource {
 	public void pricechanged(@PathParam("productId") String productId, @PathParam("newPrice") String newPrice) {
 		System.out.println("Serverless call invoked for product ID : "+productId+", price has changed to "+newPrice);	
 		//int statusCode = sendEmailNotificationWithQuarkus(productId, newPrice);		
-		//String resp = emailService.sendemail("test json data");
-         //System.out.println("Serverless Response = "+resp);	
+		String resp = emailService.sendemail("test json data");
+        System.out.println("Serverless Response = "+resp);	
 		
 		/*
 		 * if(statusCode == 201) return "Notification sent!"; else return
