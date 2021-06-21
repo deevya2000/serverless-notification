@@ -38,13 +38,13 @@ public class ProductPriceResource {
 	}
 	
 
-	@GET
+	@POST
 	@Path("/pricechanged/{productId}/{newPrice}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public void pricechanged(@PathParam("productId") String productId, @PathParam("newPrice") String newPrice) {
 		System.out.println("Serverless call invoked for product ID : "+productId+", price has changed to "+newPrice);	
 		//int statusCode = sendEmailNotificationWithQuarkus(productId, newPrice);		
-		String resp = emailService.sendemail("test json data");
+		String resp = emailService.sendemail("{ data: 'test json data' }");
         System.out.println("Serverless Response = "+resp);	
 		
 		/*
