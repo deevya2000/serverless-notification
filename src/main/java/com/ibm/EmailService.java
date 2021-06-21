@@ -7,12 +7,12 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@Path("/")
+@Path("/v1")
 @RegisterRestClient
 public interface EmailService {
 
 	@POST
-	@Path("/sendmail")
+	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
 	String sendemail(String payload);
 

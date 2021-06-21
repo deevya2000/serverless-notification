@@ -44,8 +44,8 @@ public class ProductPriceResource {
 	public void pricechanged(@PathParam("productId") String productId, @PathParam("newPrice") String newPrice) {
 		System.out.println("Serverless call invoked for product ID : "+productId+", price has changed to "+newPrice);	
 		//int statusCode = sendEmailNotificationWithQuarkus(productId, newPrice);		
-		String resp = emailService.sendemail("{ data: 'test json data' }");
-        System.out.println("Serverless Response = "+resp);	
+		//String resp = emailService.sendemail("{ data: 'test json data' }");
+       // System.out.println("Serverless Response = "+resp);	
 		
 		/*
 		 * if(statusCode == 201) return "Notification sent!"; else return
@@ -57,6 +57,8 @@ public class ProductPriceResource {
 	@Path("/hello")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String hello() {
+		String resp = emailService.sendemail("{\"name\":\"test\",\"salary\":\"123\",\"age\":\"23\"}");
+	    System.out.println("Serverless Response = "+resp);	
 		return "Hello! Notification service is accessible";
 	}
 	
