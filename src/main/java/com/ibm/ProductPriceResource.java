@@ -7,26 +7,23 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import java.util.concurrent.CompletionStage;
-
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
-
-import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 
 @Path("/")
 public class ProductPriceResource {
-	 
+	
+//    @Inject
+//    @RestClient
+//    EmailService emailService;
     
     @GET
 	@Path("/pricehello")
@@ -38,36 +35,42 @@ public class ProductPriceResource {
         System.out.println("Serverless Response = "+resp);        
         return resp;
 	}
-	
 
 	@POST
+	public void process(String message) {
+		System.out.println(
+				"Kafka message received with Quarkus reactive and Knative: product-price-updated - Sending email : " + message);
+	}
+	
+	@Incoming("product-price-updated")
+    public String processMessage(String message) {
+        System.out.println("Kafka message received in Quarkus reactive: product-price-updated - " + message);
+        return message;
+    }  
+
+	@GET
 	@Path("/pricechanged/{productId}/{newPrice}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public void pricechanged(@PathParam("productId") String productId, @PathParam("newPrice") String newPrice) {
 		System.out.println("Serverless call invoked for product ID : "+productId+", price has changed to "+newPrice);	
 		//int statusCode = sendEmailNotificationWithQuarkus(productId, newPrice);		
-		//String resp = emailService.sendemail("{ data: 'test json data' }");
-       // System.out.println("Serverless Response = "+resp);	
+		//String resp = emailService.sendemail("test json data");
+        // System.out.println("Serverless Response = "+resp);	
 		
 		/*
 		 * if(statusCode == 201) return "Notification sent!"; else return
 		 * "Failure to send notification!";
 		 */
-	}
-	
-	@GET
-	@Path("/hello")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String hello() {
-	      try {
+		
+		try {
 
-	          URL url = new URL("http://dummy.restapiexample.com/api/v1/create");
+	          URL url = new URL("http://dummy.restapiexample.com/api/v1/create"); //Add email service URL here
 	          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	          conn.setDoOutput(true);
 	          conn.setRequestMethod("POST");
 	          conn.setRequestProperty("Content-Type", "application/json");
 
-	          String input = "{\"name\":\"test\",\"salary\":\"123\",\"age\":\"23\"}";
+	          String input = "{\"name\":\"test\",\"salary\":\"123\",\"age\":\"23\"}"; //construct email service payload
 
 	          OutputStream os = conn.getOutputStream();
 	          os.write(input.getBytes());
@@ -98,6 +101,14 @@ public class ProductPriceResource {
 	          e.printStackTrace();
 
 	       }	    
+		
+		
+	}
+	
+	@GET
+	@Path("/hello")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String hello() {
 		return "Hello! Notification service is accessible";
 	}
 	
